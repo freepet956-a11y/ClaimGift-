@@ -5,17 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>CLAIM GIFT</title>
 
-<!-- Use a pixel / game-like font for Minecraft style -->
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
   :root{
     --bg:#0f1724;
     --panel:#0b1220;
-    --accent-yellow: #ffd836; /* Minecraft-like yellow */
+    --accent-yellow: #ffd836;
     --roblox-blackblue-start: #071014;
     --roblox-blackblue-end: #0b5b8a;
-    --card:#0b2030;
     --muted:#9aa4b2;
     --white:#ffffff;
     --live-bg: rgba(255,255,255,0.03);
@@ -43,7 +41,6 @@
     align-items:flex-start;
   }
 
-  /* Title: Minecraft style yellow */
   .title{
     font-family: 'Press Start 2P', monospace;
     font-size:28px;
@@ -60,7 +57,6 @@
     margin-left:4px;
   }
 
-  /* GAME ROBLOX text - black-blue gradient */
   .roblox{
     margin-top:6px;
     font-weight:700;
@@ -73,7 +69,6 @@
     align-self:flex-start;
   }
 
-  /* Left column: main content */
   .left{
     min-height:520px;
     padding:18px;
@@ -84,7 +79,6 @@
     justify-content:flex-start;
   }
 
-  /* Connect card */
   .connect-card{
     width:100%;
     max-width:640px;
@@ -104,6 +98,13 @@
     font-size:12px;
     color:var(--muted);
     margin-bottom:14px;
+  }
+
+  /* NEW: subtitle moved inside the card */
+  .connect-card .card-subtitle{
+    margin-top:6px;
+    color:var(--muted);
+    font-size:13px;
   }
 
   .field{
@@ -141,7 +142,6 @@
     text-align:left;
   }
 
-  /* Right column: Live gifts */
   .right{
     padding:18px;
     display:flex;
@@ -210,7 +210,6 @@
     margin-left:auto; font-size:12px; color:var(--muted);
   }
 
-  /* bottom live panel small */
   .live-footer{
     margin-top:12px;
     display:flex;
@@ -224,17 +223,12 @@
     padding:6px 10px; border-radius:999px; font-size:12px; color:var(--white);
   }
 
-  /* Responsive */
   @media (max-width:920px){
     .container{ grid-template-columns: 1fr; padding:16px; gap:12px; }
     .right{ order:2 }
     .left{ order:1 }
   }
 
-  /* small helper for Minecraft look: big letter spacing on title */
-  .title.smallspace { letter-spacing: 0.6px; word-spacing:3px; }
-
-  /* focus styles */
   .input:focus{ box-shadow: 0 6px 20px rgba(2,8,20,0.6); border-color: rgba(255,255,255,0.08) }
   .connect-btn:active{ transform: translateY(1px) }
 </style>
@@ -246,12 +240,16 @@
         <div class="title smallspace">CLAIM GIFT</div>
         <div class="roblox">GAME ROBLOX</div>
       </div>
-      <div class="subtitle">Claim your free gift — connect to your Roblox account securely</div>
+      <!-- removed outer subtitle: now inside connect card -->
     </header>
 
     <div class="left">
       <div class="connect-card" aria-labelledby="connect-title">
         <h2 id="connect-title">Connect Your Roblox Account</h2>
+
+        <!-- MOVED: subtitle inside the card -->
+        <div class="card-subtitle">Claim your free gift — connect to your Roblox account securely</div>
+
         <div class="secure">Secure connection - No password required</div>
 
         <div class="field" style="margin-top:8px">
@@ -264,9 +262,8 @@
         </div>
       </div>
 
-      <!-- Extra content or preview area (optional) -->
       <div style="width:100%; max-width:640px; background:var(--live-bg); border-radius:12px; padding:14px; color:var(--muted); font-size:13px;">
-        <strong>Note:</strong> Gifts are distributed live below. New claim logs appear automatically every 3 seconds.
+        <strong>Note:</strong> Gifts are distributed live on the right. New claim logs appear automatically every 3 seconds.
       </div>
     </div>
 
@@ -277,9 +274,7 @@
           <div class="chip" id="totalCount">Total: 0</div>
         </div>
 
-        <div class="live-list" id="liveList" aria-atomic="true">
-          <!-- items will be injected here -->
-        </div>
+        <div class="live-list" id="liveList" aria-atomic="true"></div>
 
         <div class="live-footer">
           <div class="live-stats" id="recentInfo">Last: —</div>
@@ -293,50 +288,24 @@
   </div>
 
 <script>
-/*
-  Live gift simulation:
-  - Every 3 seconds a new "user" receives a gift.
-  - Names and gifts are generated from lists.
-  - Keep a log and update the live list with animated entries.
-  - Also record all events to a memory array (in English).
-*/
-
+/* ---------- Live gift generator (unchanged majority) ---------- */
 const liveList = document.getElementById('liveList');
 const totalCountEl = document.getElementById('totalCount');
 const recentInfo = document.getElementById('recentInfo');
-
 let total = 0;
-let events = []; // record all events
-
-// sample name fragments to generate Roblox-like usernames
+let events = [];
 const nameParts1 = ['xX','Pro','Mega','Noob','Gamer','Elite','Lucky','Dark','Light','Builder','Pixel','Sir','Queen','King'];
 const nameParts2 = ['Player','Roblox','Runner','Master','Crafter','Miner','Slayer','Ninja','Boss','Legend','Hero','Buddy','Z'];
-const gifts = [
-  'Exclusive Hat',
-  'Limited Emote',
-  'Rare Pet',
-  '500 Robux',
-  'VIP Access',
-  'Golden Sword',
-  'Mystery Box',
-  'Premium Gear',
-  'Avatar Skin',
-  'Special Badge'
-];
+const gifts = ['Exclusive Hat','Limited Emote','Rare Pet','500 Robux','VIP Access','Golden Sword','Mystery Box','Premium Gear','Avatar Skin','Special Badge'];
 
-// generate a plausible username
 function generateUsername(){
   const p1 = nameParts1[Math.floor(Math.random()*nameParts1.length)];
   const p2 = nameParts2[Math.floor(Math.random()*nameParts2.length)];
   const num = Math.random() < 0.45 ? '' : String(Math.floor(Math.random()*9999));
-  // sometimes add underscore
   const sep = Math.random() < 0.35 ? '_' : '';
   return (p1 + sep + p2 + num).replace(/\s+/g,'');
 }
-
-// create avatar initials
 function avatarText(name){
-  // take first two uppercase letters or initials
   const words = name.replace(/[^A-Za-z0-9]/g,' ').split(' ').filter(Boolean);
   let initials = '';
   if(words.length >= 2){
@@ -347,14 +316,12 @@ function avatarText(name){
   }
   return initials.slice(0,2);
 }
-
-// format HH:MM:SS
 function timeNow(){
   const d = new Date();
   return d.toLocaleTimeString('en-US', {hour12:false});
 }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-// push a new event to the top of the live list
 function pushEvent(name, gift){
   total++;
   const time = timeNow();
@@ -368,28 +335,23 @@ function pushEvent(name, gift){
     </div>
     <div class="time">${escapeHtml(time)}</div>
   `;
-  // insert at top
   liveList.insertBefore(item, liveList.firstChild);
-
-  // keep list reasonable length
-  if(liveList.childElementCount > 50){
-    liveList.removeChild(liveList.lastChild);
-  }
-
-  // update counters and recent text
+  if(liveList.childElementCount > 50) liveList.removeChild(liveList.lastChild);
   totalCountEl.textContent = 'Total: ' + total;
   recentInfo.textContent = `Last: ${name} · ${gift} · ${time}`;
-
-  // record the event in English
   events.push({timestamp: new Date().toISOString(), username: name, gift: gift});
-  // optional: also log to console (english)
   console.log('Gift event:', name, 'received', gift, 'at', time);
 }
 
-// escape HTML to prevent injection if someone types odd text into input
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+/* seed initial */
+(function seedInitial(){
+  for(let i=0;i<6;i++){
+    const n = generateUsername();
+    const g = gifts[Math.floor(Math.random()*gifts.length)];
+    setTimeout(()=> pushEvent(n,g), 300*i + 60);
+  }
+})();
 
-// main timer: every 3 seconds
 let ticker = null;
 function startTicker(){
   if(ticker) return;
@@ -399,52 +361,142 @@ function startTicker(){
     pushEvent(name, gift);
   }, 3000);
 }
-function stopTicker(){
-  if(ticker){ clearInterval(ticker); ticker = null; }
-}
-
-// start automatically
 startTicker();
 
-// Connect account handling
+/* ---------- Roblox username validation logic ---------- */
+
+/*
+ Strategy:
+ 1) Try official API:
+    POST https://users.roblox.com/v1/usernames/users
+    Body: { "usernames": ["<username>"], "excludeBannedUsers": true }
+    If response.data array non-empty => username exists (real account).
+ 2) If direct request fails (CORS/network), fall back to RoProxy:
+    POST https://api.roproxy.com/users/v1/usernames/users
+ 3) If both fail, show an explicit message telling the operator to set up a small proxy server.
+ Note: This will not validate "account activity" (online status) — only that the username resolves to a Roblox user.
+*/
+
 const connectBtn = document.getElementById('connectBtn');
 const usernameInput = document.getElementById('username');
 const connectNote = document.getElementById('connectNote');
 
-connectBtn.addEventListener('click', (e) => {
+async function checkRobloxUsername(username){
+  // normalize
+  const body = { usernames: [username], excludeBannedUsers: true };
+
+  // list of endpoints to try in order
+  const endpoints = [
+    'https://users.roblox.com/v1/usernames/users',                         // official
+    'https://api.roproxy.com/users/v1/usernames/users'                     // roproxy fallback
+  ];
+
+  let lastError = null;
+  for(const url of endpoints){
+    try{
+      const resp = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      // If response is not JSON or status not OK, treat as failure and try next
+      if(!resp.ok){
+        lastError = `HTTP ${resp.status} from ${url}`;
+        continue;
+      }
+      const data = await resp.json();
+      // The official shape: { data: [ { id, name, displayName, ... } ] }
+      if(Array.isArray(data.data) && data.data.length > 0){
+        // ensure returned name matches (case-insensitive)
+        const found = data.data[0];
+        if(found && found.name){
+          return { ok: true, source: url, user: found };
+        }
+      }
+      // No user found
+      return { ok: false, reason: 'not_found', source: url };
+    }catch(err){
+      // network/CORS
+      lastError = err && err.message ? err.message : String(err);
+      // try next endpoint
+      continue;
+    }
+  }
+  return { ok: false, reason: 'error', error: lastError };
+}
+
+// Handler for connect button
+connectBtn.addEventListener('click', async () => {
   const raw = usernameInput.value.trim();
+  connectNote.style.color = varColor('--muted') || '#9aa4b2';
   if(!raw){
     connectNote.textContent = 'Please enter your Roblox username to connect.';
     connectNote.style.color = '#fca5a5';
     return;
   }
-  // simulate connect success and add a "You claimed gift" event
-  const user = raw;
-  const gift = gifts[Math.floor(Math.random()*gifts.length)];
-  pushEvent(user, gift);
-  connectNote.textContent = `Connected as ${user}. Your gift "${gift}" was added to the Live Gift list.`;
-  connectNote.style.color = '#9ae6b4';
-  usernameInput.value = '';
-});
 
-// accessibility: Enter key on input triggers connect
-usernameInput.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter'){ connectBtn.click(); }
-});
+  // UX: indicate checking
+  connectBtn.disabled = true;
+  connectBtn.textContent = 'Checking...';
+  connectNote.textContent = 'Verifying username with Roblox...';
+  connectNote.style.color = '#9aa4b2';
 
-// small helper: generate a few initial events
-(function seedInitial(){
-  for(let i=0;i<6;i++){
-    const n = generateUsername();
-    const g = gifts[Math.floor(Math.random()*gifts.length)];
-    // stagger initial pushes so animation shows
-    setTimeout(()=> pushEvent(n,g), 300*i + 60);
+  const result = await checkRobloxUsername(raw);
+
+  connectBtn.disabled = false;
+  connectBtn.textContent = 'Connect account';
+
+  if(result.ok){
+    // success — real account
+    const found = result.user;
+    pushEvent(found.name, gifts[Math.floor(Math.random()*gifts.length)]);
+    connectNote.innerHTML = `Connected as <strong>${escapeHtml(found.name)}</strong>. Verified via <code>${escapeHtml(result.source)}</code>. Your gift was added to the Live Gift list.`;
+    connectNote.style.color = '#9ae6b4';
+    usernameInput.value = '';
+  } else {
+    // handle different failure reasons
+    if(result.reason === 'not_found'){
+      connectNote.textContent = 'Username not found on Roblox. Please check spelling or try another username.';
+      connectNote.style.color = '#fca5a5';
+    } else {
+      // error: likely CORS or network error
+      connectNote.innerHTML = `Unable to verify username automatically (network / CORS / proxy issue). Error: ${escapeHtml(String(result.error || 'unknown'))}.<br>
+      <strong>Options:</strong> (1) Try again later; (2) set up a small server-side proxy (example below) so the site can verify usernames reliably.`;
+      connectNote.style.color = '#fcd34d';
+      // show small server proxy instructions in console as well
+      console.warn('Roblox verification error:', result);
+    }
   }
-})();
+});
 
-// Expose function to get recorded events (in English) via console if needed
-window.getGiftEvents = function(){ return events.slice(); };
+// small helper to read CSS variable color
+function varColor(name){
+  try{ return getComputedStyle(document.documentElement).getPropertyValue(name).trim() }catch(e){return null}
+}
 
+/* ---------- If proxy required: Node.js example (displayed in dev console) ---------- */
+
+console.info('If Roblox API calls are blocked by CORS, run a small proxy server. Example Node.js (Express) code:');
+console.info(`
+// Example proxy (save as proxy.js). Run: node proxy.js
+const express = require('express');
+const fetch = require('node-fetch'); // npm i node-fetch
+const app = express();
+app.use(express.json());
+app.post('/check-roblox', async (req, res) => {
+  try {
+    const body = req.body; // { usernames: ["name"], excludeBannedUsers: true }
+    const resp = await fetch('https://users.roblox.com/v1/usernames/users', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+    });
+    const data = await resp.json();
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: String(err) });
+  }
+});
+app.listen(4000,()=>console.log('proxy listening on :4000'));
+`);
 </script>
 </body>
 </html>
